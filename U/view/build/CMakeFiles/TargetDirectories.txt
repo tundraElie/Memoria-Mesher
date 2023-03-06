@@ -1,0 +1,3 @@
+/home/taiga/Desktop/U/view210907/build/CMakeFiles/viewer.dir
+/home/taiga/Desktop/U/view210907/build/CMakeFiles/edit_cache.dir
+/home/taiga/Desktop/U/view210907/build/CMakeFiles/rebuild_cache.dir
