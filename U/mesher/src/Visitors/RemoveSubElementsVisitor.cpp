@@ -30,7 +30,7 @@ namespace Clobscode
         this->points = &points;
     }
 
-    bool RemoveSubElementsVisitor::visit(Octant *o) {
+    bool RemoveSubElementsVisitor::visit(Octant *o) { //Notes:Visita octante
         vector<vector<unsigned int>> &sub_elements = o->sub_elements;
 
         list<vector<unsigned int> > still_in;
@@ -41,7 +41,7 @@ namespace Clobscode
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                if (points->at(e_pts[j]).isInside()) {
+                if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
                     onein = true;
                     break;
                 }
@@ -51,7 +51,15 @@ namespace Clobscode
             }
         }
 
-        if (still_in.size()==sub_elements.size()) {
+        //Notes:
+        //for i in sub_elements:
+        //  for j in e_pts:
+        //    if j inside:
+        //      onein = true
+        //  if onein: 
+        //    sill_in.append(i)
+
+        if (still_in.size()==sub_elements.size()) { //Notes: False si quedan elementos
             return false;
         }
         if (still_in.empty()) {
