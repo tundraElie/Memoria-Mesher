@@ -1345,7 +1345,7 @@ namespace Clobscode
 	
 	//--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
-	// FUNCION MEMORIA TT
+	////notes:  FUNCION MEMORIA TT
 	void Mesher::removeOnSurface(){
 		
 		list<Octant> newele,removed;
@@ -1354,12 +1354,15 @@ namespace Clobscode
         rsv.setPoints(points);
 		//remove elements without an inside node.
 		for (unsigned int i=0; i<octants.size(); i++) {
-			if (octants[i].isInside()) { // octantes siempre adentros, ya no hace test. esta seguridoccccccccc
+            //notes: octantes siempre adentro, ya no hace test.
+			if (octants[i].isInside()) { 
+                //notes: guarda el octante
 				newele.push_back(octants[i]);
 				continue;
 			}
 
             //if (octants[i].removeOutsideSubElements(points)) {
+            //notes: si el octante es aceptado para ser visitado, se guarda el octante en removed
             if (octants[i].accept(&rsv)) {  
                 removed.push_back(octants[i]);
             }
