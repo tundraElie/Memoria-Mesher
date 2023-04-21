@@ -89,24 +89,24 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
         removeOnSurface();
         
-        //linkElementsToNodes();
-        //apply the surface Patterns
-        applySurfacePatterns(input);
-        removeOnSurface();
-        
-        detectInsideNodes(input);
-        
-        //update element and node info.
         linkElementsToNodes();
+        //apply the surface Patterns
+        // applySurfacePatterns(input);
+        // removeOnSurface();
         
-        //shrink outside nodes to the input domain boundary
-        shrinkToBoundary(input);
+        // detectInsideNodes(input);
         
-        if (rotated) {
-            for (unsigned int i=0; i<points.size(); i++) {
-                gt.applyInverse(points[i].getPoint());
-            }
-        }
+        // //update element and node info.
+        // linkElementsToNodes();
+        
+        // //shrink outside nodes to the input domain boundary
+        // shrinkToBoundary(input);
+        
+        // if (rotated) {
+        //     for (unsigned int i=0; i<points.size(); i++) {
+        //         gt.applyInverse(points[i].getPoint());
+        //     }
+        // }
         
         //the allmighty output mesh
         FEMesh mesh;
@@ -168,20 +168,20 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
    		removeOnSurface();
 		
-		//apply the surface Patterns
+		// //apply the surface Patterns
 		applySurfacePatterns(input);
-        removeOnSurface();
+        // removeOnSurface();
 
         
-        //projectCloseToBoundaryNodes(input);
-		//removeOnSurface();
-        detectInsideNodes(input);
+        // //projectCloseToBoundaryNodes(input);
+		// //removeOnSurface();
+        // detectInsideNodes(input);
         
-		//update element and node info.
-		linkElementsToNodes();
+		// //update element and node info.
+		// linkElementsToNodes();
         
-		//shrink outside nodes to the input domain boundary
-		shrinkToBoundary(input);
+		// //shrink outside nodes to the input domain boundary
+		// shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1310,7 +1310,7 @@ namespace Clobscode
 	
 	//--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
-	
+	////notes:  FUNCIONES MEMORIA TT
 	void Mesher::detectInsideNodes(TriMesh &input){
 		for (unsigned int i=0; i<points.size(); i++) {
 			if (points[i].wasOutsideChecked()) {
@@ -1329,11 +1329,11 @@ namespace Clobscode
 				if (o_faces.empty()) {
 					continue;
 				}
+                for (auto v : o_faces)
 				for (of_iter=o_faces.begin(); of_iter!=o_faces.end(); of_iter++) {
 					p_faces.push_back(*of_iter);
 				}
 			}
-			
 			p_faces.sort();
 			p_faces.unique();
 			
@@ -1345,7 +1345,7 @@ namespace Clobscode
 	
 	//--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
-	////notes:  FUNCION MEMORIA TT
+	
 	void Mesher::removeOnSurface(){
 		
 		list<Octant> newele,removed;
@@ -1353,26 +1353,33 @@ namespace Clobscode
         RemoveSubElementsVisitor rsv; // visitors
         rsv.setPoints(points);
 		//remove elements without an inside node.
-        cout << "oct size: "<< octants.size() << "\n\n";
-        // for (unsigned int i=0; i<18; i++) {
 		for (unsigned int i=0; i<octants.size(); i++) {
-            //notes: octantes siempre adentro, ya no hace test.
-            cout << "oct"<< i << ": " << octants[i] << "\n";
 			if (octants[i].isInside()) { 
-                //notes: guarda el octante
-                cout << "Guardado\n----------------------------------------------------------------\n\n";
 				newele.push_back(octants[i]);
 				continue;
 			}
-
-            //if (octants[i].removeOutsideSubElements(points)) {
-            //notes: 
-            if (octants[i].accept(&rsv)) {  
-                cout << "Accept-Removed\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n";
-                removed.push_back(octants[i]);
+            if (octants[i].accept(&rsv)) {   ///notes: Agregar && caras no son intersectadas
+                if (octants[i].isSurface()){
+                    list<unsigned int> o_faces = octants[i].getIntersectedFaces();
+                    // cout << o_faces.size() << " " << o_faces.empty()<< " On surface\n";
+                    if (o_faces.size() < 1){
+                        newele.push_back(octants[i]);
+                        cout << "FUK\n";
+                    }
+                    else { // todo se va aqui, son issruface convarias caras intersectadas
+                        // cout << "Over me\n";
+                        removed.push_back(octants[i]);
+                    }
+                }
+                else {
+                        // cout << "Switch\n";
+                        removed.push_back(octants[i]);
+                }
+                // cout << "Accept-Removed\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n";
+                // removed.push_back(octants[i]);
             }
             else {
-                cout << "Newele\noooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo\n\n";
+                // cout << "Newele\noooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo\n\n";
                 newele.push_back(octants[i]);
             }
             
@@ -1423,21 +1430,16 @@ namespace Clobscode
         stv.setInput(input);
 
 		for (unsigned int i=0; i<octants.size(); i++) {
-			
-            
             
             //El siguiente if debe estar activo al final. Problema
             //con que nuevos Octantes internos y sub-divididos no
             //son considerados como de superficie.
             
-            
-            
-            
 			if (octants[i].isSurface()) {
                 stv.setNewPoints(tmppts);
                 stv.setIdx(i);
 				if (!octants[i].accept(&stv)) {
-					cout << "Error in Mesher::applySurfacePatterns: coultd't apply";
+					cout << "Error in Mesher::applySurfacePatterns: couldn't apply";
 					cout << " a surface pattern\n";
 					cout << octants[i] << "\n";
 					continue;
@@ -1488,7 +1490,8 @@ namespace Clobscode
 					points[epts[j]].outsideChecked();
 					Point3D oct_p = points.at(epts[j]).getPoint();
 					if (input.pointIsInMesh(oct_p,octants[i].getIntersectedFaces())) {
-						points[epts[j]].setInside();
+						points[epts[j]].setInside(); //notes: revisar
+                        cout << "\nshrinkToBoundary points[epts[j]]\n" << points[epts[j]] << "\n";
 					}
 				}
 				
@@ -1626,6 +1629,14 @@ namespace Clobscode
         //input domain, detect inner nodes. Project this nodes onto the
         //surface. If after all is done, if an element counts only with "on
         //surface" and "outside" nodes, remove it.
+
+        // notes:
+        // Debo ver en cada octante si tiene nodos en la superficie, no eliminarlos
+        // y comparar cada segmento de ese octante corta con el dominio 
+        // con segmentIntersection(vector<Point3D> &pts,const Point3D &ep1,const Point3D &ep2)
+        // si cortaban el dominio NO eliminar
+        // Esta wea es bien 2d, debo ver si las caras son intersectadas :/ no los segmestos
+        // si tenia caras que intersectaban entonces no eliminar.
         list<unsigned int> in_nodes;
         list<Octant>::iterator oiter;
         
@@ -1675,7 +1686,6 @@ namespace Clobscode
         
         //move (when possible) all inner points to surface
         std::list<unsigned int>::iterator piter;
-        
         for (piter=in_nodes.begin(); piter!=in_nodes.end(); piter++) {
             
             //if this node is attached to an octant which was split in
@@ -1690,6 +1700,13 @@ namespace Clobscode
             
             for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
                 o_faces = octants[*peiter].getIntersectedFaces();
+                if (o_faces.size() > 0){
+                        cout << "Dentro\n";
+                    }
+                    else {
+                        octants[*peiter].setSurface();
+                        cout << "fuera\n";
+                    }
                 for (oct_fcs=o_faces.begin(); oct_fcs!=o_faces.end(); oct_fcs++) {
                     p_faces.push_back(*oct_fcs);
                 }
@@ -1701,18 +1718,25 @@ namespace Clobscode
             Point3D current = points.at(*piter).getPoint();
             Point3D projected = input.getProjection(current,p_faces);
             double dis = (current - projected).Norm();
-            
-            if(dis<points[*piter].getMaxDistance()){
+            if(dis < points[*piter].getMaxDistance()){
                 //this node have been moved to boundary, thus every element
                 //sharing this node must be set as a border element in order
                 //to avoid topological problems.
-                //points.at(*piter).setOutside();
-                points.at(*piter).setProjected();
-                points.at(*piter).setPoint(projected);
 
                 for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                    octants[*peiter].setSurface();
+                    o_faces = octants[*peiter].getIntersectedFaces();
+                    if (o_faces.size() > 0){
+                        // cout << "Dentro\n";
+                    }
+                    else {
+                        octants[*peiter].setSurface();
+                        points.at(*piter).setOutside();
+                        points.at(*piter).setProjected();
+                        points.at(*piter).setPoint(projected);
+                        // cout << "fuera\n";
+                    }
                 }
+
             }
         }
         

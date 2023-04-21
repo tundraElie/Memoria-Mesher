@@ -30,45 +30,30 @@ namespace Clobscode
         this->points = &points;
     }
 
-    bool RemoveSubElementsVisitor::visit(Octant *o) { //Notes:Visita octante
+    bool RemoveSubElementsVisitor::visit(Octant *o) { 
         vector<vector<unsigned int>> &sub_elements = o->sub_elements;
 
         list<vector<unsigned int> > still_in;
         list<vector<unsigned int> >::iterator iter;
-        cout << "points_size: " << points[1].size() << "\n";
-        cout << "sub elements size: " << sub_elements.size() << "\n";
+        
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
-            //notes: 
-            cout << "e pts size: " << e_pts.size() << "\n";
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                cout << "e_pts " << j << ": "<< e_pts[j] << " ";
-                if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
-                    cout << "points[0]["<< e_pts[j]<<"]: ("<< points[0][e_pts[j]]<< ") ";
-                    cout << "T, ";
+                if (points->at(e_pts[j]).wasProjected() && points->at(e_pts[j]).isInside()){
+                    cout << e_pts[j] <<"wasprojected\n";
+                }
+                if (points->at(e_pts[j]).isInside()) { 
                     onein = true;
                     break;
                 }
-                else{
-                    cout << "F, ";
-                }
             }
-            cout << "\n";
             if (onein) {
                 still_in.push_back(sub_elements[i]);
             }
         }
 
-        //Notes:
-        //for i in sub_elements:
-        //  for j in e_pts:
-        //    if j inside:
-        //      onein = true
-        //  if onein: 
-        //    sill_in.append(i)
-
-        if (still_in.size()==sub_elements.size()) { //Notes: False si quedan elementos
+        if (still_in.size()==sub_elements.size()) {
             return false;
         }
         if (still_in.empty()) {

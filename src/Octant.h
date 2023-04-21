@@ -97,6 +97,10 @@ namespace Clobscode
 		//to the input domain, it must be treated as a surface
 		//element by the surfacePatterns
 		virtual void setSurface();
+		// notes:
+		virtual void setSurfaceButInside();
+
+		virtual bool isSurfaceButInside();
 		
 		virtual bool isSurface();
 		
@@ -121,6 +125,7 @@ namespace Clobscode
         unsigned short n_influences;
 		bool influence_commit;
 		bool surface;
+		bool surfaceButInside;
 		
 		double max_dis;
 	};
@@ -196,7 +201,15 @@ namespace Clobscode
 	inline void Octant::setSurface(){
 		surface = true;
 	}
-	
+	// notes:
+	inline void Octant::setSurfaceButInside(){
+		surfaceButInside = true;
+	}
+
+	inline bool Octant::isSurfaceButInside(){
+		return surfaceButInside;
+	}
+
 	inline bool Octant::isSurface(){
 		return surface || !intersected_faces.empty();
 	}

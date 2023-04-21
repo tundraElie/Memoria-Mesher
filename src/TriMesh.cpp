@@ -253,7 +253,15 @@ namespace Clobscode
 		
 		// normal used to compute the sign
 		Point3D pProjN;
-		
+
+		// Point3D a1 = pB - pA;
+    // Point3D b1 = pC - pA;
+    // double a = a1[1] * b1[2] - a1[2] * b1[1];
+    // double b = a1[0] * b1[2] - a1[2] * b1[0];
+    // double c = a1[0] * b1[1] - a1[1] * b1[0];
+    // double d = (- a * pA[0] - b * pA[1] - c * pA[2]) ;
+		// double cop = a * pP[0] + b * pP[1] + c * pP[2] + d;
+
 		//True if the given node is co-planar to this face
 		bool coplanar = false;
 		
@@ -272,6 +280,12 @@ namespace Clobscode
 			// do not trust this face when the node is co-planar 
 			// to it and the result is "outside", unless all 
 			// faces be co-planar to the node.
+			// notes;
+			// if (fabs(cop)<1E-8) {
+			// 	coplanar = true;
+			// 	// cout <<"el nuevo es mas coplanar\n";
+			// }
+
 			if (fabs(k)<1E-8) {
 				coplanar = true;
 			}
@@ -341,7 +355,6 @@ namespace Clobscode
 					pProjN = pNab;
 					faceEdgeNode = 1;
 				}
-			
             pDist = pProjP.DistanceTo( pP );
         }
 		
@@ -371,7 +384,6 @@ namespace Clobscode
 					// pseudo normal of the edge AC
 					P2N = pNac;
 				}
-			
             double d = P2.DistanceTo( pP );
 			
             // Better ?
@@ -519,7 +531,9 @@ namespace Clobscode
 		//one_good recalls if a non co-planar face conserve the
 		//current_min_dis
 		bool one_good = false;
-		
+		// for (auto v : lFaces)
+		// 	cout << v << " ";
+		// cout << "\n\n";
 		// browsing all the surface faces
 		for (iSurfF = lFaces.begin(); iSurfF!=lFaces.end(); iSurfF++)
 		{
