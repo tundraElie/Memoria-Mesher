@@ -168,20 +168,20 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
    		removeOnSurface();
 		
-		//apply the surface Patterns
-		applySurfacePatterns(input);
-        removeOnSurface();
+		// //apply the surface Patterns
+		// applySurfacePatterns(input);
+        // removeOnSurface();
 
         
-        //projectCloseToBoundaryNodes(input);
-		//removeOnSurface();
-        detectInsideNodes(input);
+        // //projectCloseToBoundaryNodes(input);
+		// //removeOnSurface();
+        // detectInsideNodes(input);
         
-		//update element and node info.
-		linkElementsToNodes();
+		// //update element and node info.
+		// linkElementsToNodes();
         
-		//shrink outside nodes to the input domain boundary
-		shrinkToBoundary(input);
+		// //shrink outside nodes to the input domain boundary
+		// shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1353,14 +1353,14 @@ namespace Clobscode
         RemoveSubElementsVisitor rsv; // visitors
         rsv.setPoints(points);
 		//remove elements without an inside node.
-        cout << "oct size: "<< octants.size() << "\n\n";
+        // cout << "oct size: "<< octants.size() << "\n\n";
         // for (unsigned int i=0; i<18; i++) {
 		for (unsigned int i=0; i<octants.size(); i++) {
             //notes: octantes siempre adentro, ya no hace test.
-            cout << "oct"<< i << ": " << octants[i] << "\n";
+            // cout << "oct"<< i << ": " << octants[i] << "\n";
 			if (octants[i].isInside()) { 
                 //notes: guarda el octante
-                cout << "Guardado\n----------------------------------------------------------------\n\n";
+                // cout << "Guardado\n----------------------------------------------------------------\n\n";
 				newele.push_back(octants[i]);
 				continue;
 			}
@@ -1368,11 +1368,11 @@ namespace Clobscode
             //if (octants[i].removeOutsideSubElements(points)) {
             //notes: 
             if (octants[i].accept(&rsv)) {  
-                cout << "Accept-Removed\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n";
+                // cout << "Accept-Removed\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n";
                 removed.push_back(octants[i]);
             }
             else {
-                cout << "Newele\noooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo\n\n";
+                // cout << "Newele\noooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo\n\n";
                 newele.push_back(octants[i]);
             }
             
@@ -1423,16 +1423,11 @@ namespace Clobscode
         stv.setInput(input);
 
 		for (unsigned int i=0; i<octants.size(); i++) {
-			
-            
             
             //El siguiente if debe estar activo al final. Problema
             //con que nuevos Octantes internos y sub-divididos no
             //son considerados como de superficie.
-            
-            
-            
-            
+
 			if (octants[i].isSurface()) {
                 stv.setNewPoints(tmppts);
                 stv.setIdx(i);
@@ -1701,18 +1696,25 @@ namespace Clobscode
             Point3D current = points.at(*piter).getPoint();
             Point3D projected = input.getProjection(current,p_faces);
             double dis = (current - projected).Norm();
-            
+            // cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
+            // cout << p_eles.size() << "\n";
             if(dis<points[*piter].getMaxDistance()){
                 //this node have been moved to boundary, thus every element
                 //sharing this node must be set as a border element in order
                 //to avoid topological problems.
                 //points.at(*piter).setOutside();
-                points.at(*piter).setProjected();
-                points.at(*piter).setPoint(projected);
-
+                
                 for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
                     octants[*peiter].setSurface();
+                    if (octants[*peiter].isInside()){
+                        points.at(*piter).setProjected();
+                        points.at(*piter).setPoint(projected);
+                        octants[*peiter].setProjected();
+                    }
                 }
+            }
+            else {
+                cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
             }
         }
         

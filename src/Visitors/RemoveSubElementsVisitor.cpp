@@ -35,26 +35,30 @@ namespace Clobscode
 
         list<vector<unsigned int> > still_in;
         list<vector<unsigned int> >::iterator iter;
-        cout << "points_size: " << points[1].size() << "\n";
-        cout << "sub elements size: " << sub_elements.size() << "\n";
+        // cout << "points_size: " << points[1].size() << "\n";
+        // cout << "sub elements size: " << sub_elements.size() << "\n";
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
             //notes: 
-            cout << "e pts size: " << e_pts.size() << "\n";
+            // cout << "e pts size: " << e_pts.size() << " proj: ";
+            int proj = 0;
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                cout << "e_pts " << j << ": "<< e_pts[j] << " ";
+                // cout << "e_pts " << j << ": "<< e_pts[j] << " ";
                 if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
-                    cout << "points[0]["<< e_pts[j]<<"]: ("<< points[0][e_pts[j]]<< ") ";
-                    cout << "T, ";
+                    // cout << "points[0]["<< e_pts[j]<<"]: ("<< points[0][e_pts[j]]<< ") ";
+                    // cout << "T, ";
                     onein = true;
                     break;
                 }
+                if (points->at(e_pts[j]).wasProjected()) { 
+                    proj+=1;
+                }
                 else{
-                    cout << "F, ";
+                    // cout << "F, ";
                 }
             }
-            cout << "\n";
+            // cout << proj << "\n";
             if (onein) {
                 still_in.push_back(sub_elements[i]);
             }

@@ -97,7 +97,11 @@ namespace Clobscode
 		//to the input domain, it must be treated as a surface
 		//element by the surfacePatterns
 		virtual void setSurface();
-		
+		// notes:
+		virtual void setSurfaceAndInside();
+		virtual bool isSurfaceAndInside();
+		virtual void setProjected();
+		virtual bool wasProjected();
 		virtual bool isSurface();
 		
 		virtual void setIntersectedFaces(list<unsigned int> &ifcs);
@@ -121,6 +125,8 @@ namespace Clobscode
         unsigned short n_influences;
 		bool influence_commit;
 		bool surface;
+		bool projected;
+		bool surfaceAndInside;
 		
 		double max_dis;
 	};
@@ -186,7 +192,7 @@ namespace Clobscode
 	inline void Octant::computeMaxDistance(vector<MeshPoint> &mp){
 		Point3D p0 = mp[pointindex[0]].getPoint();
 		Point3D p1 = mp[pointindex[6]].getPoint();
-		max_dis = 0.3 * (p0 - p1).Norm();
+		max_dis = 0.55*(p0 - p1).Norm();
 	}
 	
 	inline double Octant::getMaxDistance(){
@@ -196,7 +202,21 @@ namespace Clobscode
 	inline void Octant::setSurface(){
 		surface = true;
 	}
-	
+	// notes:
+	inline void Octant::setProjected(){
+		projected = true;
+	}
+	inline bool Octant::wasProjected(){
+		return projected;
+	}
+	inline void Octant::setSurfaceAndInside(){
+		surfaceAndInside = true;
+	}
+
+	inline bool Octant::isSurfaceAndInside(){
+		return surfaceAndInside;
+	}
+
 	inline bool Octant::isSurface(){
 		return surface || !intersected_faces.empty();
 	}
