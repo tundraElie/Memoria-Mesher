@@ -1719,26 +1719,22 @@ namespace Clobscode
                         points.at(*piter).setPoint(projected);
                         octants[*peiter].setProjected();
                         octants[*peiter].addProjectedNodes();
+                        if (octants[*peiter].getProjectedNodes() == 8) {
+                            nodes_projected.push_back((*piter));
+                        }
                     }
                 }
             }
-            else {
-                // cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
-            }
         }
-        for (unsigned int i=0; i<octants.size(); i++) {
-            vector<unsigned int> epts = octants[i].getPoints();
-            unsigned int proj = 0;
-            for (unsigned int j=0; j < epts.size(); j++) {
-                if (points[epts[j]].wasProjected()){
-                    proj++;
-                }
-                if (proj == 8){
-                    nodes_projected.push_back(epts[j]);
-                    cout << proj << " ";
-                }
-            }
-        }
+        // for (unsigned int i=0; i<octants.size(); i++) {
+        //     vector<unsigned int> epts = octants[i].getPoints();
+        //     unsigned int proj = 0;
+        //     if (octants[i].getProjectedNodes() == 8) {
+        //         for (unsigned int j=0; j < epts.size(); j++) {
+        //             nodes_projected.push_back(epts[j]);
+        //         }
+        //     }
+        // }
         nodes_projected.sort();
         nodes_projected.unique();
         //move (when possible) all inner points to surface
