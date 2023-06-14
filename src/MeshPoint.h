@@ -83,6 +83,10 @@ namespace Clobscode
 		virtual void setIOState(bool state);
 		
 		virtual bool getIOState();
+		//notes:
+		virtual void setProjectedNodes();
+		virtual void addProjectedNodes();
+		virtual unsigned short getProjectedNodes();
 		
 	protected:
 		
@@ -97,6 +101,7 @@ namespace Clobscode
 		list<unsigned int> elements;
 		
 		double maxdistance;
+		unsigned short projected_nodes;
 		
 	};
 	
@@ -176,6 +181,16 @@ namespace Clobscode
 	
 	inline list<unsigned int> &MeshPoint::getElements(){
 		return elements;
+	}
+	// notes:
+	inline void MeshPoint::setProjectedNodes(){
+		projected_nodes=0;
+	}
+	inline void MeshPoint::addProjectedNodes(){
+		projected_nodes++;
+	}
+	inline unsigned short MeshPoint::getProjectedNodes(){
+		return projected_nodes;
 	}
 	
 	std::ostream& operator<<(std::ostream& o,MeshPoint &p);

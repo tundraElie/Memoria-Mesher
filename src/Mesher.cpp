@@ -169,19 +169,19 @@ namespace Clobscode
    		removeOnSurface(input);
 		
 		// //apply the surface Patterns
-		applySurfacePatterns(input);
-        removeOnSurface(input);
+		// applySurfacePatterns(input);
+        // removeOnSurface(input);
 
         
-        //projectCloseToBoundaryNodes(input);
-		//removeOnSurface();
-        detectInsideNodes(input);
+        // //projectCloseToBoundaryNodes(input);
+		// //removeOnSurface();
+        // detectInsideNodes(input);
         
-		//update element and node info.
-		linkElementsToNodes();
+		// //update element and node info.
+		// linkElementsToNodes();
         
-		//shrink outside nodes to the input domain boundary
-		shrinkToBoundary(input);
+		// //shrink outside nodes to the input domain boundary
+		// shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1473,7 +1473,6 @@ namespace Clobscode
 		list<Octant>::iterator oiter;
         
 		for (unsigned int i=0; i<octants.size(); i++) {
-            octants[i].setProjectedNodes();
 			if (octants[i].isInside()) {
 				continue;
 			}
@@ -1482,7 +1481,6 @@ namespace Clobscode
 			//may be projected to the input domain.
 			vector<unsigned int> epts = octants[i].getPoints();
 			for (unsigned int j=0; j < epts.size(); j++) {
-				
 				if (!points[epts[j]].wasOutsideChecked()) {
 					cout << "error!!! in Mesher::shrinkToBoundary\n";
                     cout << "  some nodes were not outside checked (";
@@ -1649,7 +1647,7 @@ namespace Clobscode
             //may be projected to the input domain.
             vector<unsigned int> epts = octants[i].getPoints();
             for (unsigned int j=0; j < epts.size(); j++) {
-                
+                points[epts[j]].setProjectedNodes();
                 if (!points[epts[j]].wasOutsideChecked()) {
                     cout << "error!! in Mesher::projectCloseToBoundaryNodes\n";
                     cout << "  point wasn't outside checked\n";
@@ -1717,42 +1715,87 @@ namespace Clobscode
                     if (octants[*peiter].isInside()){
                         points.at(*piter).setProjected();
                         points.at(*piter).setPoint(projected);
+                        points.at(*piter).addProjectedNodes();
                         octants[*peiter].setProjected();
                         octants[*peiter].addProjectedNodes();
-                        if (octants[*peiter].getProjectedNodes() == 8) {
-                            nodes_projected.push_back((*piter));
+                        // if (octants[*peiter].getProjectedNodes() == 8) {
+                        //     nodes_projected.push_back((*piter));
+                        // }
+                    }
+                    else {
+                        list<unsigned int> inter_faces = octants[*peiter].getIntersectedFaces();
+                        if (inter_faces.size() >4 && inter_faces.size() < 13){
+                            cout << inter_faces.size() <<" ";
+                            points.at(*piter).setProjected();
+                            points.at(*piter).setPoint(projected);
+                            points.at(*piter).addProjectedNodes();
+                            octants[*peiter].setProjected();
+                            octants[*peiter].addProjectedNodes();
+                            octants[*peiter].setSurfaceAndInside();
                         }
                     }
-                    // else {
-                    //     points.at(*piter).setOutside();
-                    // }
                 }
             }
         }
 
-        nodes_projected.sort();
-        nodes_projected.unique();
-        std::list<unsigned int>::iterator it;
+        // for (unsigned int i=0; i<octants.size(); i++) {
+        //     vector<unsigned int> epts = octants[i].getPoints();
+        //     list<unsigned int> epts_proj;
+        //     if (!octants[i].isInside()){
+        //         for (unsigned int j=0; j<epts.size(); j++){
+        //             if (points[epts[j]].getProjectedNodes() == 2){
+        //                 // epts_proj.push_back(epts[j]);
+        //                 list<unsigned int> p_eles = points[epts[j]].getElements();
+        //                 list<unsigned int>::iterator peiter;
+        //                 for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) { 
+        //                     if (octants[*peiter].getProjectedNodes()==0){
+        //                         for (unsigned int j=0; j<epts.size(); j++){
+        //                             if (points[epts[j]].getProjectedNodes() == 4){
+        //                                 epts_proj.push_back(epts[j]);
+        //                             }   
+        //                         }
+        //                         if (epts_proj.size()==4){
+        //                             octants[*peiter].setSurfaceAndInside();
+        //                             points[epts[j]].setInside();
+        //                         }
+
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+            // if (epts_proj.size() == 4) {
+            //     list<unsigned int>::iterator ite;
+            //     for (ite=epts_proj.begin(); ite!=epts_proj.end(); ite++) {
+            //         nodes_projected.push_back((*ite));
+            //     }
+            // }
+        // }
+
+        // nodes_projected.sort();
+        // nodes_projected.unique();
+        // std::list<unsigned int>::iterator it;
+        // // cout << " \n";
+        // for (it=nodes_projected.begin(); it!=nodes_projected.end(); it++) {
+        //     list<unsigned int> p_eles = points.at(*it).getElements();
+        //     list<unsigned int>::iterator peiter;
+        //     for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) { 
+        //         if (octants[*peiter].getProjectedNodes()==0){
+        //             // cout << "a ";
+        //             // octants[*peiter].setSurface();
+        //             octants[*peiter].setSurfaceAndInside();
+        //             points.at(*it).setInside();
+        //             cout << octants[*peiter].getProjectedNodes() << " ";
+        //             vector<unsigned int> epts = octants[*peiter].getPoints();
+        //             // for (unsigned int j=0; j < epts.size(); j++) {
+        //             //     points.at(*it).setInside();
+        //             //     // points[epts[j]].setInside();
+        //             //     // points.at(*piter).setProjected();
+        //             // }
+        //         }
+        //     }
+        // }
         // cout << " \n";
-        for (it=nodes_projected.begin(); it!=nodes_projected.end(); it++) {
-            list<unsigned int> p_eles = points.at(*it).getElements();
-            list<unsigned int>::iterator peiter;
-            for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                if (octants[*peiter].getProjectedNodes()==0){
-                    // octants[*peiter].setSurface();
-                    octants[*peiter].setSurfaceAndInside();
-                    points.at(*it).setInside();
-                    // cout << octants[*peiter].getProjectedNodes() << " ";
-                    vector<unsigned int> epts = octants[*peiter].getPoints();
-                    // for (unsigned int j=0; j < epts.size(); j++) {
-                    //     points.at(*it).setInside();
-                    //     // points[epts[j]].setInside();
-                    //     // points.at(*piter).setProjected();
-                    // }
-                }
-            }
-        }
-        cout << " \n";
         
         /*insurf.sort();
         insurf.unique();

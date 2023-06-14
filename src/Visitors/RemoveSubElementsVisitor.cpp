@@ -64,7 +64,11 @@ namespace Clobscode
                 still_in.push_back(sub_elements[i]);
             }
             else {
-                // if (o->isSurfaceAndInside()) { 
+                if (o->isSurfaceAndInside()) { 
+                    o->setSurface();
+                    //  cout <<  " Q\n";
+                    return false;
+                }
                 //     for (unsigned int j=0; j<e_pts.size(); j++) {
                 //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
                 //         onein = true;
