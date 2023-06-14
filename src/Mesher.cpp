@@ -87,12 +87,12 @@ namespace Clobscode
         detectInsideNodes(input);
         
         projectCloseToBoundaryNodes(input);
-        removeOnSurface();
+        removeOnSurface(input);
         
         //linkElementsToNodes();
         //apply the surface Patterns
         applySurfacePatterns(input);
-        removeOnSurface();
+        removeOnSurface(input);
         
         detectInsideNodes(input);
         
@@ -166,7 +166,7 @@ namespace Clobscode
 		detectInsideNodes(input);
         
         projectCloseToBoundaryNodes(input);
-   		removeOnSurface();
+   		removeOnSurface(input);
 		
 		// //apply the surface Patterns
 		// applySurfacePatterns(input);
@@ -1312,6 +1312,8 @@ namespace Clobscode
     //--------------------------------------------------------------------------------
 	
 	void Mesher::detectInsideNodes(TriMesh &input){
+        
+
 		for (unsigned int i=0; i<points.size(); i++) {
 			if (points[i].wasOutsideChecked()) {
 				continue;
@@ -1346,33 +1348,38 @@ namespace Clobscode
 	//--------------------------------------------------------------------------------
     //--------------------------------------------------------------------------------
 	////notes:  FUNCION MEMORIA TT
-	void Mesher::removeOnSurface(){
+	void Mesher::removeOnSurface(TriMesh &input){
 		
-		list<Octant> newele,removed;
+		list<Octant> newele,removed,to_review;
 		list<Octant>::iterator eiter;
         RemoveSubElementsVisitor rsv; // visitors
         rsv.setPoints(points);
+        rsv.setTriMesh(input);
+        // rsv.setTriMesh(input);
 		//remove elements without an inside node.
         // cout << "oct size: "<< octants.size() << "\n\n";
         // for (unsigned int i=0; i<18; i++) {
 		for (unsigned int i=0; i<octants.size(); i++) {
+            list<unsigned int> inter_faces = octants[i].getIntersectedFaces();
+            rsv.setFaces(inter_faces);
             //notes: octantes siempre adentro, ya no hace test.
             // cout << "oct"<< i << ": " << octants[i] << "\n";
 			if (octants[i].isInside()) { 
                 //notes: guarda el octante
-                // cout << "Guardado\n----------------------------------------------------------------\n\n";
 				newele.push_back(octants[i]);
 				continue;
 			}
-
-            //if (octants[i].removeOutsideSubElements(points)) {
             //notes: 
             if (octants[i].accept(&rsv)) {  
-                // cout << "Accept-Removed\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n";
+                // if (octants[i].wasProjected()){
+                //     cout << "hi ";
+                // }
+                // else {
+                //     cout << "meh ";
+                // }
                 removed.push_back(octants[i]);
             }
             else {
-                // cout << "Newele\noooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo\n\n";
                 newele.push_back(octants[i]);
             }
             
@@ -1466,6 +1473,7 @@ namespace Clobscode
 		list<Octant>::iterator oiter;
         
 		for (unsigned int i=0; i<octants.size(); i++) {
+            octants[i].setProjectedNodes();
 			if (octants[i].isInside()) {
 				continue;
 			}
@@ -1621,7 +1629,7 @@ namespace Clobscode
         //input domain, detect inner nodes. Project this nodes onto the
         //surface. If after all is done, if an element counts only with "on
         //surface" and "outside" nodes, remove it.
-        list<unsigned int> in_nodes;
+        list<unsigned int> in_nodes, nodes_projected;
         list<Octant>::iterator oiter;
         
         for (unsigned int i=0; i<octants.size(); i++) {
@@ -1710,13 +1718,43 @@ namespace Clobscode
                         points.at(*piter).setProjected();
                         points.at(*piter).setPoint(projected);
                         octants[*peiter].setProjected();
+                        octants[*peiter].addProjectedNodes();
                     }
                 }
             }
             else {
-                cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
+                // cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
             }
         }
+        for (unsigned int i=0; i<octants.size(); i++) {
+            vector<unsigned int> epts = octants[i].getPoints();
+            unsigned int proj = 0;
+            for (unsigned int j=0; j < epts.size(); j++) {
+                if (points[epts[j]].wasProjected()){
+                    proj++;
+                }
+                if (proj == 8){
+                    nodes_projected.push_back(epts[j]);
+                    cout << proj << " ";
+                }
+            }
+        }
+        nodes_projected.sort();
+        nodes_projected.unique();
+        //move (when possible) all inner points to surface
+        std::list<unsigned int>::iterator it;
+        cout << " \n";
+        for (it=nodes_projected.begin(); it!=nodes_projected.end(); it++) {
+            list<unsigned int> p_eles = points.at(*it).getElements();
+            list<unsigned int>::iterator peiter;
+            for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+                if (octants[*peiter].getProjectedNodes()==0){
+                    octants[*peiter].setSurfaceAndInside();
+                    cout << octants[*peiter].getProjectedNodes() << " ";
+                }
+            }
+        }
+        cout << " \n";
         
         /*insurf.sort();
         insurf.unique();

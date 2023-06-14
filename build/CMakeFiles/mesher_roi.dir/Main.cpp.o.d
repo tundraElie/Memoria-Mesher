@@ -252,6 +252,7 @@ CMakeFiles/mesher_roi.dir/Main.cpp.o: \
  /home/taiga/Desktop/U/mesher/src/Visitors/../SurfTemplate6.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/../SurfTemplate7.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/RemoveSubElementsVisitor.h \
+ /home/taiga/Desktop/U/mesher/src/Visitors/IntersectionsVisitor.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/OneIrregularVisitor.h \
  /usr/include/c++/11/ctime /usr/include/c++/11/chrono \
  /usr/include/c++/11/ratio /usr/include/c++/11/bits/parse_numbers.h

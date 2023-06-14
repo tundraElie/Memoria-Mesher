@@ -176,6 +176,9 @@ CMakeFiles/mesher_roi.dir/Visitors/RemoveSubElementsVisitor.cpp.o: \
  /usr/include/c++/11/bits/stl_tree.h /usr/include/c++/11/bits/stl_set.h \
  /usr/include/c++/11/bits/stl_multiset.h \
  /usr/include/c++/11/bits/erase_if.h \
+ /home/taiga/Desktop/U/mesher/src/Visitors/../SurfTriangle.h \
+ /home/taiga/Desktop/U/mesher/src/Visitors/IntersectionsVisitor.h \
+ /home/taiga/Desktop/U/mesher/src/Visitors/../Point3D.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/Visitor.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/../Octant.h \
  /home/taiga/Desktop/U/mesher/src/Visitors/../Visitors/Visitor.h \

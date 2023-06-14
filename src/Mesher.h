@@ -106,7 +106,7 @@ namespace Clobscode
 		virtual void detectInsideNodes(TriMesh &input);
 
         // aquiiiiiiiiii remove
-		virtual void removeOnSurface();
+		virtual void removeOnSurface(TriMesh &input);
 		
 		virtual void applySurfacePatterns(TriMesh &input);
 
