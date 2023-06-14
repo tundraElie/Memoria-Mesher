@@ -83,18 +83,29 @@ namespace Clobscode
             return false;
         }
         if (still_in.empty()) {
-            vector<SurfTriangle> faces = mesh->getFaces();//3524
-            vector<Point3D> input_pts = mesh->getPoints();//1756
-            for (it=to_review.begin(); it!=to_review.end(); it++) {
-                vector<vector<Point3D> > oct_edges = iv.getEdges(points->at((*it)[0]).getPoint(),
-                                                                points->at((*it)[6]).getPoint());
-                // for (unsigned int j=0; j<faces.size(); j++) {
-                //     if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
-                //         // return false; //Do not remove
-                //         // cout <<  " \n";
-                //     }
-                // }
+            // vector<SurfTriangle> faces = mesh->getFaces();//3524
+            list<unsigned int> faces_inter = o->intersected_faces;
+
+            Point3D avg;
+            for (unsigned int i =0; i<8; i++){
+                avg += points->at(o->getPoints()[i]).getPoint();
             }
+            avg = avg/8;
+            if (mesh->pointIsInMesh(avg, faces_inter)){
+                return false;
+            }
+            // vector<Point3D> input_pts = mesh->getPoints();//1756
+            // cout <<  faces.size() << " \n";
+            // for (it=to_review.begin(); it!=to_review.end(); it++) {
+            //     vector<vector<Point3D> > oct_edges = iv.getEdges(points->at((*it)[0]).getPoint(),
+            //                                                     points->at((*it)[6]).getPoint());
+            //     for (auto j : faces_inter){
+            //     // for (unsigned int j=0; j<faces_inter.size(); j++) {
+            //         if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
+            //             return false; //Do not remove
+            //         }
+            //     }
+            // }
             return true;
         }
 
