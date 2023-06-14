@@ -169,19 +169,19 @@ namespace Clobscode
    		removeOnSurface(input);
 		
 		// //apply the surface Patterns
-		// applySurfacePatterns(input);
-        // removeOnSurface();
+		applySurfacePatterns(input);
+        removeOnSurface(input);
 
         
-        // //projectCloseToBoundaryNodes(input);
-		// //removeOnSurface();
-        // detectInsideNodes(input);
+        //projectCloseToBoundaryNodes(input);
+		//removeOnSurface();
+        detectInsideNodes(input);
         
-		// //update element and node info.
-		// linkElementsToNodes();
+		//update element and node info.
+		linkElementsToNodes();
         
-		// //shrink outside nodes to the input domain boundary
-		// shrinkToBoundary(input);
+		//shrink outside nodes to the input domain boundary
+		shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1713,7 +1713,7 @@ namespace Clobscode
                 //points.at(*piter).setOutside();
                 
                 for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                    octants[*peiter].setSurface();
+                    // octants[*peiter].setSurface();
                     if (octants[*peiter].isInside()){
                         points.at(*piter).setProjected();
                         points.at(*piter).setPoint(projected);
@@ -1723,30 +1723,32 @@ namespace Clobscode
                             nodes_projected.push_back((*piter));
                         }
                     }
+                    // else {
+                    //     points.at(*piter).setOutside();
+                    // }
                 }
             }
         }
-        // for (unsigned int i=0; i<octants.size(); i++) {
-        //     vector<unsigned int> epts = octants[i].getPoints();
-        //     unsigned int proj = 0;
-        //     if (octants[i].getProjectedNodes() == 8) {
-        //         for (unsigned int j=0; j < epts.size(); j++) {
-        //             nodes_projected.push_back(epts[j]);
-        //         }
-        //     }
-        // }
+
         nodes_projected.sort();
         nodes_projected.unique();
-        //move (when possible) all inner points to surface
         std::list<unsigned int>::iterator it;
-        cout << " \n";
+        // cout << " \n";
         for (it=nodes_projected.begin(); it!=nodes_projected.end(); it++) {
             list<unsigned int> p_eles = points.at(*it).getElements();
             list<unsigned int>::iterator peiter;
             for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
                 if (octants[*peiter].getProjectedNodes()==0){
+                    // octants[*peiter].setSurface();
                     octants[*peiter].setSurfaceAndInside();
-                    cout << octants[*peiter].getProjectedNodes() << " ";
+                    points.at(*it).setInside();
+                    // cout << octants[*peiter].getProjectedNodes() << " ";
+                    vector<unsigned int> epts = octants[*peiter].getPoints();
+                    // for (unsigned int j=0; j < epts.size(); j++) {
+                    //     points.at(*it).setInside();
+                    //     // points[epts[j]].setInside();
+                    //     // points.at(*piter).setProjected();
+                    // }
                 }
             }
         }

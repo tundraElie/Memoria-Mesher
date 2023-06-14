@@ -223,6 +223,7 @@ namespace Clobscode
             }
             case 5: {
                 SurfTemplate5 surf_t5;
+                
                 unsigned int old_size = newpts->size();
                 bool succeed = surf_t5.getSubelements(pointindex,inpts,*meshpts,
                                                       *newpts,sub_elements,*input,

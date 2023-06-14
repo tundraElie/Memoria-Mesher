@@ -53,17 +53,6 @@ namespace Clobscode
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                // if (points->at(e_pts[j]).wasProjected()) { 
-                //     list<unsigned int> p_eles = points->at(e_pts[j]).getElements();
-                //     list<unsigned int>::iterator peiter;
-                //     for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                //         if (o[*peiter].getProjectedNodes() > 7){
-                //             cout << o[*peiter].getProjectedNodes() << " ";
-                //             o[*peiter].setProjected();
-                //         }
-                //     }
-                //     // cout <<  " \n";
-                // }
                 if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
                     onein = true;
                     break;
@@ -71,13 +60,21 @@ namespace Clobscode
             }
             // cout <<  " Q\n";
             if (onein) {
+                o->setSurface();
                 still_in.push_back(sub_elements[i]);
             }
             else {
-                if (o->isSurfaceAndInside()) { 
-                    cout <<  "hi ";
-                    return false;
-                }
+                // if (o->isSurfaceAndInside()) { 
+                //     for (unsigned int j=0; j<e_pts.size(); j++) {
+                //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+                //         onein = true;
+                //         break;
+                //     }
+                // }
+                //     cout <<  "hi ";
+                //     o->setSurface();
+                //     return false;
+                // }
                 to_review.push_back(sub_elements[i]);
             }
         }
