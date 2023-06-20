@@ -1371,12 +1371,6 @@ namespace Clobscode
 			}
             //notes: 
             if (octants[i].accept(&rsv)) {  
-                // if (octants[i].wasProjected()){
-                //     cout << "hi ";
-                // }
-                // else {
-                //     cout << "meh ";
-                // }
                 removed.push_back(octants[i]);
             }
             else {
@@ -1499,7 +1493,7 @@ namespace Clobscode
 					continue;
 				}
 				
-				if (points[epts[j]].isOutside()) {
+				if (points[epts[j]].isOutside() && !points[epts[j]].wasProjected()) {
 					out_nodes.push_back(epts[j]);
 				}
 			}

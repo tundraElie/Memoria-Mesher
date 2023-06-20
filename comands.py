@@ -16,11 +16,11 @@ if make[(len(make)-31):-1] == "[100%] Built target mesher_roi":
                                 cwd=DIR+"data").communicate()[0]
   # print(mesher_roi)
   ## Creacion de Archivo
-  test_file = subprocess.Popen(["../build/mesher_roi","-d","guide.mdl","-s", "4", "-u", "guide4", "-m", "-v"],
+  test_file = subprocess.Popen(["../build/mesher_roi","-d","guide.mdl","-s", "2", "-u", "guide2", "-m", "-v"],
                               cwd=DIR+"data").communicate()[0]
 
   ## Vizualizar Objeto
-  process = subprocess.Popen(["../../view/build/viewer","-m","guide4.m3d"], cwd=DIR+"data",bufsize=0,
+  process = subprocess.Popen(["../../view/build/viewer","-m","guide2.m3d"], cwd=DIR+"data",bufsize=0,
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)

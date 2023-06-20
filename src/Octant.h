@@ -100,6 +100,8 @@ namespace Clobscode
 		// notes:
 		virtual void setSurfaceAndInside();
 		virtual bool isSurfaceAndInside();
+		virtual void setPatternsApplied();
+		virtual bool wasPatternsApplied();
 		virtual void setProjected();
 		virtual bool wasProjected();
 		virtual bool isSurface();
@@ -129,6 +131,7 @@ namespace Clobscode
 		bool influence_commit;
 		bool surface;
 		bool projected;
+		bool patternsApplied;
 		unsigned short projected_nodes;
 		bool surfaceAndInside;
 		
@@ -196,7 +199,7 @@ namespace Clobscode
 	inline void Octant::computeMaxDistance(vector<MeshPoint> &mp){
 		Point3D p0 = mp[pointindex[0]].getPoint();
 		Point3D p1 = mp[pointindex[6]].getPoint();
-		max_dis = 0.3*(p0 - p1).Norm();
+		max_dis = 0.5*(p0 - p1).Norm();
 	}
 	
 	inline double Octant::getMaxDistance(){
@@ -220,6 +223,12 @@ namespace Clobscode
 		projected = true;
 	}
 	inline bool Octant::wasProjected(){
+		return projected;
+	}
+	inline void Octant::setPatternsApplied(){
+		patternsApplied = true;
+	}
+	inline bool Octant::wasPatternsApplied(){
 		return projected;
 	}
 	inline void Octant::setSurfaceAndInside(){
