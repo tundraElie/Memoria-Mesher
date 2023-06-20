@@ -168,7 +168,7 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
    		removeOnSurface(input);
 		
-		// //apply the surface Patterns
+		//apply the surface Patterns
 		// applySurfacePatterns(input);
         // removeOnSurface(input);
 
@@ -1495,7 +1495,7 @@ namespace Clobscode
 					}
 				}
 				
-				if (points[epts[j]].wasProjected()) {
+				if (points[epts[j]].wasProjected() && !points[epts[j]].isInside()) {
 					continue;
 				}
 				
@@ -1712,16 +1712,16 @@ namespace Clobscode
                 //to avoid topological problems.
                 //points.at(*piter).setOutside();
                 
+                points.at(*piter).setProjected();
+                points.at(*piter).setPoint(projected);
+                octants[*peiter].setProjected();
                 for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                    // octants[*peiter].setSurface();
+                    octants[*peiter].setSurface();
                     // if (octants[*peiter].isInside()){
-                        points.at(*piter).setProjected();
-                        points.at(*piter).setPoint(projected);
-                        octants[*peiter].setProjected();
-                        octants[*peiter].addProjectedNodes();
-                        if (octants[*peiter].getProjectedNodes() == 8) {
-                            nodes_projected.push_back((*piter));
-                        }
+                        // octants[*peiter].addProjectedNodes();
+                        // if (octants[*peiter].getProjectedNodes() == 8) {
+                        //     nodes_projected.push_back((*piter));
+                        // }
                     // }
                     // else {
                     //     points.at(*piter).setOutside();

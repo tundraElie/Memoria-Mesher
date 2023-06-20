@@ -53,7 +53,7 @@ namespace Clobscode
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+                if (points->at(e_pts[j]).isInside() && !points->at(e_pts[j]).wasProjected() ) {  //Notes: Verifica si el punto esta adentro
                     onein = true;
                     break;
                 }
@@ -90,8 +90,15 @@ namespace Clobscode
             for (unsigned int i =0; i<8; i++){
                 avg += points->at(o->getPoints()[i]).getPoint();
             }
-            avg = avg/8;
+            avg /= 8;
             if (mesh->pointIsInMesh(avg, faces_inter)){
+            //     vector<unsigned int> e_pts = sub_elements[i];
+            // for (unsigned int j=0; j<e_pts.size(); j++) {
+            //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+            //         onein = true;
+            //         break;
+            //     }
+            // }
                 return false;
             }
             // vector<Point3D> input_pts = mesh->getPoints();//1756

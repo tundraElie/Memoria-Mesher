@@ -110,9 +110,9 @@ namespace SurfMesh
 			return false;
 		}
 		
-		if(fabs(dis_max)<1.0e-10 || fabs(dis_min)<1.0e-10){
-			return false;
-		}
+		// if(fabs(dis_max)<1.0e-10 || fabs(dis_min)<1.0e-10){
+		// 	return false;
+		// }
 		/*if (dis_min==0) {
 			
 		}*/
