@@ -40,12 +40,15 @@ namespace Clobscode
     bool RemoveSubElementsVisitor::visit(Octant *o) { //Notes:Visita octante
         vector<vector<unsigned int>> &sub_elements = o->sub_elements;
 
+        list<unsigned int> faces_inter = o->intersected_faces;
         list<vector<unsigned int> > still_in;
         list<vector<unsigned int> > to_review;
         list<vector<unsigned int> >::iterator iter;
         list<vector<unsigned int> >::iterator it;
         IntersectionsVisitor iv; // visitors
 
+        double max_dis = o->getMaxDistance()*0.99;
+        double max_dis_neg = -max_dis;
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
@@ -59,25 +62,26 @@ namespace Clobscode
             if (onein) {
                 o->setSurface();
                 still_in.push_back(sub_elements[i]);
-                if (o->isInside()){
-                        cout <<  " Q\n";
-                    }
             }
             else {
                 // to_review.push_back(sub_elements[i]);
-                list<unsigned int> faces_inter = o->intersected_faces;
 
                 Point3D avg;
                 for (unsigned int i =0; i<e_pts.size(); i++){
                     avg += points->at(o->getPoints()[i]).getPoint(); // El peso promedio del punto está dentro
                 }
                 avg /= e_pts.size();
-                double max_dis = o->getMaxDistance();
                
+                // if (max_dis - (points->at(o->getPoints()[0]).getPoint() - avg).Norm() < -0.1) {
+                //     cout << (points->at(o->getPoints()[0]).getPoint() - avg).Norm()<< " "<< max_dis << " "<< max_dis-(points->at(o->getPoints()[0]).getPoint() - avg).Norm()<<"\n";
+                //     o->setSurface();
+                //     for (unsigned int j=0; j<e_pts.size(); j++) { 
+                //         points->at(e_pts[j]).setProjected();
+                //     }
+                //     return false;
+                // }
                 if (mesh->pointIsInMesh(avg, faces_inter)){
-                if ((points->at(o->getPoints()[0]).getPoint() - avg).Norm() > max_dis) {
-                    cout << (points->at(o->getPoints()[0]).getPoint() - avg).Norm()<< " "<< max_dis << " "<< max_dis-(points->at(o->getPoints()[0]).getPoint() - avg).Norm()<<"\n";
-                }
+                    
                     o->setSurface();
                     for (unsigned int j=0; j<e_pts.size(); j++) { 
                         points->at(e_pts[j]).setProjected();
@@ -85,9 +89,7 @@ namespace Clobscode
                     return false;
                 } 
                 else {
-                    if (o->isInside()){
-                        cout <<  " Q\n";
-                    }
+                     to_review.push_back(sub_elements[i]);
                 }
             }
         }
@@ -96,7 +98,40 @@ namespace Clobscode
             return false;
         }
         if (still_in.empty()) {
+            vector<Point3D> input_pts = mesh->getPoints();//1756
+            vector<SurfTriangle> faces = mesh->getFaces();
+            // cout <<  faces.size() << " \n";
+            for (it=to_review.begin(); it!=to_review.end(); it++) {
+                vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
+                                                                newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
+
+                vector<vector<Point3D> > edges;
+                vector<Point3D> edge(2, Point3D ());
+                edge[0] = points->at((*it)[0]).getPoint();
+                edge[1] = points->at((*it)[6]).getPoint();
+                edges.push_back(edge);
+                // unsigned int count=0;
+                for (auto j : faces_inter){
+                // for (unsigned int j=0; j<faces_inter.size(); j++) {
+                    if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
+                        // count++;
+                        // cout <<  count << " ";
+                        o->setSurface();
+                        vector<unsigned int> e_pts = (*it);
+                        for (unsigned int k=0; k<e_pts.size(); k++) { 
+                            points->at(e_pts[k]).setProjected();
+                        }
+                        return false; //Do not remove
+                    }
+                }
+                // // cout <<  "\n";
+                // if (count >0){
+                //     // cout <<  count << " ";
+                //     return false; //Do not remove
+                // }
+            }
             return true;
+
         }
 
         sub_elements.clear();
@@ -120,5 +155,16 @@ namespace Clobscode
         }
 
         return false;
+    }
+
+    Point3D RemoveSubElementsVisitor::newPoint(Point3D &point, double &dis) {
+        Point3D newPoint;
+        //Move the point in a distance dis.
+        for (unsigned int i=0; i<3; i++) {
+            newPoint[i] = point[i] + dis;
+            cout << newPoint[i] << " ";
+        }
+        cout  << "\n";
+        return newPoint;
     }
 }

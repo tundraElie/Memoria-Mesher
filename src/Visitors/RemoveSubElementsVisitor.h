@@ -59,6 +59,7 @@ namespace Clobscode
 
     private:
         vector<MeshPoint> *points;
+        Point3D newPoint(Point3D &point, double &dis);
         //variables
         TriMesh *mesh;
         list<unsigned int> *faces;
