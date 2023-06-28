@@ -60,6 +60,8 @@ namespace Clobscode
     private:
         vector<MeshPoint> *points;
         Point3D newPoint(Point3D &point, double &dis);
+        Point3D NewPointTowardsCentroide(Point3D &point, Point3D &target, double &dis);
+        vector<vector<Point3D>> generateEdges(const vector<Point3D>& oct_points);
         //variables
         TriMesh *mesh;
         list<unsigned int> *faces;
