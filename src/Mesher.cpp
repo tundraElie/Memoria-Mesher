@@ -89,18 +89,18 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
         removeOnSurface(input);
         
-        //linkElementsToNodes();
-        //apply the surface Patterns
-        applySurfacePatterns(input);
-        removeOnSurface(input);
+        // //linkElementsToNodes();
+        // //apply the surface Patterns
+        // applySurfacePatterns(input);
+        // removeOnSurface(input);
         
-        detectInsideNodes(input);
+        // detectInsideNodes(input);
         
-        //update element and node info.
-        linkElementsToNodes();
+        // //update element and node info.
+        // linkElementsToNodes();
         
-        //shrink outside nodes to the input domain boundary
-        shrinkToBoundary(input);
+        // //shrink outside nodes to the input domain boundary
+        // shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -168,7 +168,7 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
    		removeOnSurface(input);
 		
-		//apply the surface Patterns
+		// // // // //apply the surface Patterns
 		// applySurfacePatterns(input);
         // removeOnSurface(input);
 
@@ -1711,7 +1711,7 @@ namespace Clobscode
                         points.at(*piter).setPoint(projected);
                         octants[*peiter].setProjected();
                     }
-                    else {
+                    else {//if (dis<points[*piter].getMaxDistance()*1.5) {
                         if (!points[*piter].isInside()){
                             points.at(*piter).setProjected();
                             points.at(*piter).setPoint(projected);
