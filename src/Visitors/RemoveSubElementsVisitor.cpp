@@ -101,35 +101,35 @@ namespace Clobscode
             vector<Point3D> input_pts = mesh->getPoints();//1756
             vector<SurfTriangle> faces = mesh->getFaces();
             // cout <<  faces.size() << " \n";
-            // for (it=to_review.begin(); it!=to_review.end(); it++) {
-            //     vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
-            //                                                     newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
+            for (it=to_review.begin(); it!=to_review.end(); it++) {
+                vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
+                                                                newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
 
-            //     vector<vector<Point3D> > edges;
-            //     vector<Point3D> edge(2, Point3D ());
-            //     edge[0] = points->at((*it)[0]).getPoint();
-            //     edge[1] = points->at((*it)[6]).getPoint();
-            //     edges.push_back(edge);
-            //     // unsigned int count=0;
-            //     for (auto j : faces_inter){
-            //     // for (unsigned int j=0; j<faces_inter.size(); j++) {
-            //         if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
-            //             // count++;
-            //             // cout <<  count << " ";
-            //             o->setSurface();
-            //             vector<unsigned int> e_pts = (*it);
-            //             for (unsigned int k=0; k<e_pts.size(); k++) { 
-            //                 points->at(e_pts[k]).setProjected();
-            //             }
-            //             return false; //Do not remove
-            //         }
-            //     }
-            //     // // cout <<  "\n";
-            //     // if (count >0){
-            //     //     // cout <<  count << " ";
-            //     //     return false; //Do not remove
-            //     // }
-            // }
+                vector<vector<Point3D> > edges;
+                vector<Point3D> edge(2, Point3D ());
+                edge[0] = points->at((*it)[0]).getPoint();
+                edge[1] = points->at((*it)[6]).getPoint();
+                edges.push_back(edge);
+                // unsigned int count=0;
+                for (auto j : faces_inter){
+                // for (unsigned int j=0; j<faces_inter.size(); j++) {
+                    if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
+                        // count++;
+                        // cout <<  count << " ";
+                        o->setSurface();
+                        vector<unsigned int> e_pts = (*it);
+                        for (unsigned int k=0; k<e_pts.size(); k++) { 
+                            points->at(e_pts[k]).setProjected();
+                        }
+                        return false; //Do not remove
+                    }
+                }
+                // // cout <<  "\n";
+                // if (count >0){
+                //     // cout <<  count << " ";
+                //     return false; //Do not remove
+                // }
+            }
             
             return true;
 

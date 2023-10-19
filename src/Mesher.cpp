@@ -168,13 +168,13 @@ namespace Clobscode
         projectCloseToBoundaryNodes(input);
    		removeOnSurface(input);
 		
-		//apply the surface Patterns
+		// //apply the surface Patterns
 		// applySurfacePatterns(input);
         // removeOnSurface(input);
 
         
-        // projectCloseToBoundaryNodes(input);
-		// removeOnSurface();
+        // // // projectCloseToBoundaryNodes(input);
+		// // // removeOnSurface();
         // detectInsideNodes(input);
         
 		// //update element and node info.
@@ -1623,7 +1623,7 @@ namespace Clobscode
         //input domain, detect inner nodes. Project this nodes onto the
         //surface. If after all is done, if an element counts only with "on
         //surface" and "outside" nodes, remove it.
-        list<unsigned int> in_nodes, nodes_projected;
+        list<unsigned int> in_nodes, out_nodes, nodes_projected;
         list<Octant>::iterator oiter;
         
         for (unsigned int i=0; i<octants.size(); i++) {
@@ -1638,7 +1638,6 @@ namespace Clobscode
             if (octants[i].isInside()) {
                 continue;
             }
-            
             //Put in a std::list inside nodes of boundary elements that
             //may be projected to the input domain.
             vector<unsigned int> epts = octants[i].getPoints();
@@ -1663,7 +1662,13 @@ namespace Clobscode
                 //     }
                 //     points[epts[j]].setMaxDistance(md);
                 // }
-                in_nodes.push_back(epts[j]);
+                if (points[epts[j]].isInside()) {
+                    in_nodes.push_back(epts[j]);
+                }
+                else {
+                    out_nodes.push_back(epts[j]);
+                }
+                // in_nodes.push_back(epts[j]);
                 double md = octants[i].getMaxDistance();
                 if (j>7) {
                     md*=0.5;
@@ -1675,10 +1680,60 @@ namespace Clobscode
         
         in_nodes.sort();
         in_nodes.unique();
+
+        out_nodes.sort();
+        out_nodes.unique();
+        //move (when possible) all inner points to surface
+        std::list<unsigned int>::iterator pitr;
+        for (pitr=out_nodes.begin(); pitr!=out_nodes.end(); pitr++) {
+            
+            //if this node is attached to an octant which was split in
+            //mixed-elements due to transition patterns, avoid the
+            //displacement.
+            
+            //get the faces of octants sharing this node
+            list<unsigned int> o_faces,p_faces, p_eles = points.at(*pitr).getElements();
+            list<unsigned int>::iterator peiter,oct_fcs;
+            
+            //bool trans_pattern = false;
+            
+            for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+                o_faces = octants[*peiter].getIntersectedFaces();
+                for (oct_fcs=o_faces.begin(); oct_fcs!=o_faces.end(); oct_fcs++) {
+                    p_faces.push_back(*oct_fcs);
+                }
+            }
+            
+            p_faces.sort();
+            p_faces.unique();
+            
+            Point3D current = points.at(*pitr).getPoint();
+            Point3D projected = input.getProjection(current,p_faces);
+            double dis = (current - projected).Norm();
+            // if(dis<points[*pitr].getMaxDistance()){}
+                //this node have been moved to boundary, thus every element
+                //sharing this node must be set as a border element in order
+                //to avoid topological problems.
+                points.at(*pitr).setOutside();
+                points.at(*pitr).setProjected();
+                points.at(*pitr).setPoint(projected);
+                octants[*peiter].setProjected();
+                for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+                    octants[*peiter].setSurface();
+                    // if (octants[*peiter].isInside()){
+                        // octants[*peiter].addProjectedNodes();
+                        // if (octants[*peiter].getProjectedNodes() == 8) {
+                        //     nodes_projected.push_back((*piter));
+                        // }
+                    // }
+                    // else {
+                    //     points.at(*piter).setOutside();
+                    // }
+                }
+        }
         
         //move (when possible) all inner points to surface
         std::list<unsigned int>::iterator piter;
-        
         for (piter=in_nodes.begin(); piter!=in_nodes.end(); piter++) {
             
             //if this node is attached to an octant which was split in
@@ -1708,54 +1763,28 @@ namespace Clobscode
             // cout << p_eles.size() << "\n";
 
             // if(dis<points[*piter].getMaxDistance()){}
-            if(dis<points[*piter].getMaxDistance()*1.4){
-                cout << " ricky\n";
-            // }
                 //this node have been moved to boundary, thus every element
                 //sharing this node must be set as a border element in order
                 //to avoid topological problems.
-                //points.at(*piter).setOutside();
-            }
-            if ((!points.at(*piter).isInside())) {
-                    if (!points.at(*piter).isInside()) {
-                        cout << " fuck fr\n";
-                    } else{
-                        cout << "zb1\n";
-                    }
-                    points.at(*piter).setProjected();
-                    points.at(*piter).setPoint(projected);
-                    octants[*peiter].setProjected();
-                    for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                        octants[*peiter].setSurface();
-                        // if (octants[*peiter].isInside()){
-                            // octants[*peiter].addProjectedNodes();
-                            // if (octants[*peiter].getProjectedNodes() == 8) {
-                            //     nodes_projected.push_back((*piter));
-                            // }
-                        // }
-                        // else {
-                        //     points.at(*piter).setOutside();
-                        // }
-                    }
-                cout << " fuck fr\n";
-            } else {
+                // points.at(*piter).setInside();
                 points.at(*piter).setProjected();
-                    points.at(*piter).setPoint(projected);
-                    octants[*peiter].setProjected();
-                    for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                        octants[*peiter].setSurface();
-                        // if (octants[*peiter].isInside()){
-                            // octants[*peiter].addProjectedNodes();
-                            // if (octants[*peiter].getProjectedNodes() == 8) {
-                            //     nodes_projected.push_back((*piter));
-                            // }
+                points.at(*piter).setPoint(projected);
+                octants[*peiter].setProjected();
+                for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+                    octants[*peiter].setSurface();
+                    // if (octants[*peiter].isInside()){
+                        // octants[*peiter].addProjectedNodes();
+                        // if (octants[*peiter].getProjectedNodes() == 8) {
+                        //     nodes_projected.push_back((*piter));
                         // }
-                        // else {
-                        //     points.at(*piter).setOutside();
-                        // }
-                    }
-            }
+                    // }
+                    // else {
+                    //     points.at(*piter).setOutside();
+                    // }
+                }
         }
+
+
 
         nodes_projected.sort();
         nodes_projected.unique();
