@@ -171,7 +171,6 @@ namespace Clobscode
 		//apply the surface Patterns
 		// applySurfacePatterns(input);
         // removeOnSurface(input);
-
         
         // projectCloseToBoundaryNodes(input);
 		// removeOnSurface();
@@ -1708,53 +1707,54 @@ namespace Clobscode
             // cout << p_eles.size() << "\n";
 
             // if(dis<points[*piter].getMaxDistance()){}
-            if(dis<points[*piter].getMaxDistance()*1.4){
-                cout << " ricky\n";
-            // }
-                //this node have been moved to boundary, thus every element
-                //sharing this node must be set as a border element in order
-                //to avoid topological problems.
-                //points.at(*piter).setOutside();
-            }
+            // if(dis<points[*piter].getMaxDistance()){
+            //     cout << " ricky\n";
+            // // }
+            //     //this node have been moved to boundary, thus every element
+            //     //sharing this node must be set as a border element in order
+            //     //to avoid topological problems.
+            //     //points.at(*piter).setOutside();
             if ((!points.at(*piter).isInside())) {
-                    if (!points.at(*piter).isInside()) {
-                        cout << " fuck fr\n";
-                    } else{
-                        cout << "zb1\n";
-                    }
-                    points.at(*piter).setProjected();
-                    points.at(*piter).setPoint(projected);
-                    octants[*peiter].setProjected();
-                    for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                        octants[*peiter].setSurface();
-                        // if (octants[*peiter].isInside()){
-                            // octants[*peiter].addProjectedNodes();
-                            // if (octants[*peiter].getProjectedNodes() == 8) {
-                            //     nodes_projected.push_back((*piter));
-                            // }
-                        // }
-                        // else {
-                        //     points.at(*piter).setOutside();
-                        // }
-                    }
-                cout << " fuck fr\n";
-            } else {
+                if (!points.at(*piter).isInside()) {
+                    cout << " fuck fr\n";
+                } else{
+                    cout << "zb1\n";
+                }
                 points.at(*piter).setProjected();
-                    points.at(*piter).setPoint(projected);
-                    octants[*peiter].setProjected();
-                    for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
-                        octants[*peiter].setSurface();
-                        // if (octants[*peiter].isInside()){
-                            // octants[*peiter].addProjectedNodes();
-                            // if (octants[*peiter].getProjectedNodes() == 8) {
-                            //     nodes_projected.push_back((*piter));
-                            // }
-                        // }
-                        // else {
-                        //     points.at(*piter).setOutside();
-                        // }
+                points.at(*piter).setPoint(projected);
+                octants[*peiter].setProjected();
+                for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+                    octants[*peiter].setSurface();
+                    if (octants[*peiter].isInside()){
+                        octants[*peiter].addProjectedNodes();
+                        if (octants[*peiter].getProjectedNodes() == 8) {
+                            nodes_projected.push_back((*piter));
+                        }
                     }
-            }
+                    else {
+                        points.at(*piter).setOutside();
+                    }
+                }
+                cout << " fuck fr\n";
+            } 
+            // }
+            // if ((points.at(*piter).isInside())) {
+            //     points.at(*piter).setProjected();
+            //     points.at(*piter).setPoint(projected);
+            //     octants[*peiter].setProjected();
+            //     for (peiter=p_eles.begin(); peiter!=p_eles.end(); peiter++) {
+            //         octants[*peiter].setSurface();
+            //         // if (octants[*peiter].isInside()){
+            //             // octants[*peiter].addProjectedNodes();
+            //             // if (octants[*peiter].getProjectedNodes() == 8) {
+            //             //     nodes_projected.push_back((*piter));
+            //             // }
+            //         // }
+            //         // else {
+            //         //     points.at(*piter).setOutside();
+            //         // }
+            //     }
+            // }
         }
 
         nodes_projected.sort();

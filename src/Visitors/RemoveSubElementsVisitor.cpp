@@ -82,10 +82,10 @@ namespace Clobscode
                 // }
                 if (mesh->pointIsInMesh(avg, faces_inter)){
                     
-                    o->setSurface();
-                    for (unsigned int j=0; j<e_pts.size(); j++) { 
-                        points->at(e_pts[j]).setProjected();
-                    }
+                    // o->setSurface();
+                    // for (unsigned int j=0; j<e_pts.size(); j++) { 
+                    //     points->at(e_pts[j]).setProjected();
+                    // }
                     return false;
                 } 
                 else {
