@@ -166,21 +166,24 @@ namespace Clobscode
 		detectInsideNodes(input);
         
         projectCloseToBoundaryNodes(input);
-   		removeOnSurface(input);
+   		//shrink outside nodes to the input domain boundary
+        cout << "umnh what\n";
+        // shrinkToBoundary(input);
+        removeOnSurface(input);
 		
-		//apply the surface Patterns
-		// applySurfacePatterns(input);
-        // removeOnSurface(input);
+		// apply the surface Patterns
+		applySurfacePatterns(input);
+        removeOnSurface(input);
         
         // projectCloseToBoundaryNodes(input);
 		// removeOnSurface();
-        // detectInsideNodes(input);
+        detectInsideNodes(input);
         
-		// //update element and node info.
-		// linkElementsToNodes();
+		//update element and node info.
+		linkElementsToNodes();
         
-		// //shrink outside nodes to the input domain boundary
-		// shrinkToBoundary(input);
+		//shrink outside nodes to the input domain boundary
+		shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1714,12 +1717,8 @@ namespace Clobscode
             //     //sharing this node must be set as a border element in order
             //     //to avoid topological problems.
             //     //points.at(*piter).setOutside();
-            if ((!points.at(*piter).isInside())) {
-                if (!points.at(*piter).isInside()) {
-                    cout << " fuck fr\n";
-                } else{
-                    cout << "zb1\n";
-                }
+
+            if ((points.at(*piter).isInside())) {
                 points.at(*piter).setProjected();
                 points.at(*piter).setPoint(projected);
                 octants[*peiter].setProjected();
@@ -1735,7 +1734,6 @@ namespace Clobscode
                         points.at(*piter).setOutside();
                     }
                 }
-                cout << " fuck fr\n";
             } 
             // }
             // if ((points.at(*piter).isInside())) {

@@ -1,7 +1,7 @@
 import subprocess
 
 DIR = "/home/taiga/Desktop/U/mesher/"
-NUM = "1"
+NUM = "4"
 NAME = "guide"
 VIEWER = True
 

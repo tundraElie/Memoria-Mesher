@@ -40,99 +40,109 @@ namespace Clobscode
     bool RemoveSubElementsVisitor::visit(Octant *o) { //Notes:Visita octante
         vector<vector<unsigned int>> &sub_elements = o->sub_elements;
 
-        list<unsigned int> faces_inter = o->intersected_faces;
         list<vector<unsigned int> > still_in;
         list<vector<unsigned int> > to_review;
         list<vector<unsigned int> >::iterator iter;
         list<vector<unsigned int> >::iterator it;
         IntersectionsVisitor iv; // visitors
+        list<unsigned int> faces_inter = o->intersected_faces;
 
-        double max_dis = o->getMaxDistance()*0.99;
-        double max_dis_neg = -max_dis;
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
+            unsigned int cant=0;
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                if (points->at(e_pts[j]).isInside() && !points->at(e_pts[j]).wasProjected() ) {  //Notes: Verifica si el punto esta adentro
+                if (points->at(e_pts[j]).wasProjected() ) {  //Notes: Verifica si el punto esta adentro
                     onein = true;
-                    break;
+                    cant++;
+                    // break;
                 }
             }
-            // cout <<  " Q\n";
+            Point3D avg;
+            for (unsigned int j=0; j<e_pts.size(); j++) {
+                avg += points->at(o->getPoints()[i]).getPoint();
+            }
+            avg /= e_pts.size();
+            cout << cant <<" pts proyected ";
+            if (!(mesh->pointIsInMesh(avg, faces_inter))){
+                cout <<  " Out\n";
+            } else {
+                cout <<  " In\n";
+            }
+
             if (onein) {
                 o->setSurface();
                 still_in.push_back(sub_elements[i]);
             }
             else {
-                // to_review.push_back(sub_elements[i]);
-
-                Point3D avg;
-                for (unsigned int i =0; i<e_pts.size(); i++){
-                    avg += points->at(o->getPoints()[i]).getPoint(); // El peso promedio del punto está dentro
-                }
-                avg /= e_pts.size();
-               
-                // if (max_dis - (points->at(o->getPoints()[0]).getPoint() - avg).Norm() < -0.1) {
-                //     cout << (points->at(o->getPoints()[0]).getPoint() - avg).Norm()<< " "<< max_dis << " "<< max_dis-(points->at(o->getPoints()[0]).getPoint() - avg).Norm()<<"\n";
-                //     o->setSurface();
-                //     for (unsigned int j=0; j<e_pts.size(); j++) { 
-                //         points->at(e_pts[j]).setProjected();
+                // if (o->isSurfaceAndInside()) { 
+                //     for (unsigned int j=0; j<e_pts.size(); j++) {
+                //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+                //         onein = true;
+                //         break;
                 //     }
+                // }
+                //     cout <<  "hi ";
+                //     o->setSurface();
                 //     return false;
                 // }
-                if (mesh->pointIsInMesh(avg, faces_inter)){
-                    
-                    // o->setSurface();
-                    // for (unsigned int j=0; j<e_pts.size(); j++) { 
-                    //     points->at(e_pts[j]).setProjected();
-                    // }
-                    return false;
-                } 
-                else {
-                     to_review.push_back(sub_elements[i]);
-                }
+                to_review.push_back(sub_elements[i]);
             }
         }
 
         if (still_in.size()==sub_elements.size()) { //Notes: False if there's still elements inside.
+            // list<unsigned int> faces_inter = o->intersected_faces;
+
+            // Point3D avg;
+            // for (unsigned int i =0; i<8; i++){
+            //     avg += points->at(o->getPoints()[i]).getPoint();
+            // }
+            // avg /= 8;
+            // if !(mesh->pointIsInMesh(avg, faces_inter)){
+            // //     vector<unsigned int> e_pts = sub_elements[i];
+            // // for (unsigned int j=0; j<e_pts.size(); j++) {
+            // //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+            // //         onein = true;
+            // //         break;
+            // //     }
+            // // }
+            // cout << "here\n";
+                // return true;
+            // }
             return false;
         }
         if (still_in.empty()) {
-            vector<Point3D> input_pts = mesh->getPoints();//1756
-            vector<SurfTriangle> faces = mesh->getFaces();
+            // vector<SurfTriangle> faces = mesh->getFaces();//3524
+            list<unsigned int> faces_inter = o->intersected_faces;
+
+            Point3D avg;
+            for (unsigned int i =0; i<8; i++){
+                avg += points->at(o->getPoints()[i]).getPoint();
+            }
+            avg /= 8;
+            if (mesh->pointIsInMesh(avg, faces_inter)){
+            //     vector<unsigned int> e_pts = sub_elements[i];
+            // for (unsigned int j=0; j<e_pts.size(); j++) {
+            //     if (points->at(e_pts[j]).isInside()) {  //Notes: Verifica si el punto esta adentro
+            //         onein = true;
+            //         break;
+            //     }
+            // }
+                return false;
+            }
+            // vector<Point3D> input_pts = mesh->getPoints();//1756
             // cout <<  faces.size() << " \n";
             // for (it=to_review.begin(); it!=to_review.end(); it++) {
-            //     vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
-            //                                                     newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
-
-            //     vector<vector<Point3D> > edges;
-            //     vector<Point3D> edge(2, Point3D ());
-            //     edge[0] = points->at((*it)[0]).getPoint();
-            //     edge[1] = points->at((*it)[6]).getPoint();
-            //     edges.push_back(edge);
-            //     // unsigned int count=0;
+            //     vector<vector<Point3D> > oct_edges = iv.getEdges(points->at((*it)[0]).getPoint(),
+            //                                                     points->at((*it)[6]).getPoint());
             //     for (auto j : faces_inter){
             //     // for (unsigned int j=0; j<faces_inter.size(); j++) {
             //         if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
-            //             // count++;
-            //             // cout <<  count << " ";
-            //             o->setSurface();
-            //             vector<unsigned int> e_pts = (*it);
-            //             for (unsigned int k=0; k<e_pts.size(); k++) { 
-            //                 points->at(e_pts[k]).setProjected();
-            //             }
             //             return false; //Do not remove
             //         }
             //     }
-            //     // // cout <<  "\n";
-            //     // if (count >0){
-            //     //     // cout <<  count << " ";
-            //     //     return false; //Do not remove
-            //     // }
             // }
-            
             return true;
-
         }
 
         sub_elements.clear();
@@ -156,16 +166,5 @@ namespace Clobscode
         }
 
         return false;
-    }
-
-    Point3D RemoveSubElementsVisitor::newPoint(Point3D &point, double &dis) {
-        Point3D newPoint;
-        //Move the point in a distance dis.
-        for (unsigned int i=0; i<3; i++) {
-            newPoint[i] = point[i] + dis;
-            // cout << newPoint[i] << " ";
-        }
-        // cout  << "\n";
-        return newPoint;
     }
 }
