@@ -60,6 +60,7 @@ namespace Clobscode
     private:
         vector<MeshPoint> *points;
         Point3D newPoint(Point3D &point, double &dis);
+        Point3D newPointTowardsCentroide(Point3D &point, double &targetDistance, Point3D &centroid);
         //variables
         TriMesh *mesh;
         list<unsigned int> *faces;

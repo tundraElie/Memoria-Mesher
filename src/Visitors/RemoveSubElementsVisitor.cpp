@@ -47,7 +47,7 @@ namespace Clobscode
         list<vector<unsigned int> >::iterator it;
         IntersectionsVisitor iv; // visitors
 
-        double max_dis = o->getMaxDistance()*0.99;
+        double max_dis = o->getMaxDistance()*0.9;
         double max_dis_neg = -max_dis;
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
@@ -80,13 +80,13 @@ namespace Clobscode
                 //     }
                 //     return false;
                 // }
+
                 if (mesh->pointIsInMesh(avg, faces_inter)){
-                    
                     o->setSurface();
-                    for (unsigned int j=0; j<e_pts.size(); j++) { 
-                        points->at(e_pts[j]).setProjected();
-                    }
-                    return false;
+                    // for (unsigned int j=0; j<e_pts.size(); j++) { 
+                    //     points->at(e_pts[j]).setProjected();
+                    // }
+                    // return false;
                 } 
                 else {
                      to_review.push_back(sub_elements[i]);
@@ -98,38 +98,41 @@ namespace Clobscode
             return false;
         }
         if (still_in.empty()) {
-            vector<Point3D> input_pts = mesh->getPoints();//1756
-            vector<SurfTriangle> faces = mesh->getFaces();
-            // cout <<  faces.size() << " \n";
-            for (it=to_review.begin(); it!=to_review.end(); it++) {
-                vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
-                                                                newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
+            // vector<Point3D> input_pts = mesh->getPoints();//1756
+            // vector<SurfTriangle> faces = mesh->getFaces();
+            // for (it=to_review.begin(); it!=to_review.end(); it++) {
+            //     Point3D avg;
+            //     for (unsigned int i =0; i<(*it).size(); i++){
+            //         avg += points->at(o->getPoints()[i]).getPoint(); // El peso promedio del punto está dentro
+            //     }
+            //     avg /= (*it).size();
 
-                vector<vector<Point3D> > edges;
-                vector<Point3D> edge(2, Point3D ());
-                edge[0] = points->at((*it)[0]).getPoint();
-                edge[1] = points->at((*it)[6]).getPoint();
-                edges.push_back(edge);
-                // unsigned int count=0;
-                for (auto j : faces_inter){
-                // for (unsigned int j=0; j<faces_inter.size(); j++) {
-                    if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
-                        // count++;
-                        // cout <<  count << " ";
-                        o->setSurface();
-                        vector<unsigned int> e_pts = (*it);
-                        for (unsigned int k=0; k<e_pts.size(); k++) { 
-                            points->at(e_pts[k]).setProjected();
-                        }
-                        return false; //Do not remove
-                    }
-                }
-                // // cout <<  "\n";
-                // if (count >0){
-                //     // cout <<  count << " ";
-                //     return false; //Do not remove
-                // }
-            }
+            //     // vector<vector<Point3D> > oct_edges = iv.getEdges(newPoint(points->at((*it)[0]).getPoint(), max_dis),
+            //     //                                                 newPoint(points->at((*it)[6]).getPoint(), max_dis_neg));
+
+            //     vector<vector<Point3D> > oct_edges = iv.getEdges(
+            //         newPointTowardsCentroide(points->at((*it)[0]).getPoint(), max_dis, avg), 
+            //         newPointTowardsCentroide(points->at((*it)[6]).getPoint(), max_dis, avg));
+
+            //     vector<vector<Point3D> > edges;
+            //     vector<Point3D> edge(2, Point3D ());
+            //     edge[0] = points->at((*it)[0]).getPoint();
+            //     edge[1] = points->at((*it)[6]).getPoint();
+            //     edges.push_back(edge);
+            //     // unsigned int count=0;
+            //     for (auto j : faces_inter){
+            //     // for (unsigned int j=0; j<faces_inter.size(); j++) {
+            //         if (edgeTriangleIntersection(faces[j],input_pts,oct_edges)){
+            //             o->setSurface();
+            //             vector<unsigned int> e_pts = (*it);
+            //             for (unsigned int k=0; k<e_pts.size(); k++) { 
+            //                 points->at(e_pts[k]).setProjected();
+            //             }
+            //             return false; //Do not remove
+            //         }
+            //     }
+
+            // }
             return true;
 
         }
@@ -148,7 +151,6 @@ namespace Clobscode
         //test each edge against the triangle
         for (unsigned int i=0; i<oct_edges.size(); i++) {
             vector<Point3D> oct_ed = oct_edges[i];
-
             if (st.segmentIntersection(input_pts,oct_ed[0],oct_ed[1])) {
                 return true;
             }
@@ -162,9 +164,24 @@ namespace Clobscode
         //Move the point in a distance dis.
         for (unsigned int i=0; i<3; i++) {
             newPoint[i] = point[i] + dis;
-            cout << newPoint[i] << " ";
         }
-        cout  << "\n";
+        return newPoint;
+    }
+
+    Point3D RemoveSubElementsVisitor::newPointTowardsCentroide(Point3D &point, double &targetDistance, Point3D &centroid) {
+        // Check for invalid distance
+        // cout << point[0]<<"," << point[1]<<","<<point[2]<< " "<< centroid[0]<<"," << centroid[1]<<","<<centroid[2]<< " dis" << targetDistance <<" \n";
+        if (targetDistance <= 0) {
+            throw std::invalid_argument("Target distance must be positive.");
+        }
+
+        // Calculate the direction vector from 'point' to 'centroid'
+        Point3D direction = centroid - point;
+
+        // Normalize the direction vector
+        // Move the point in the direction by the desired distance
+        Point3D newPoint = point + direction.normalize() * targetDistance;
+        // cout << newPoint<< "\n";
         return newPoint;
     }
 }
