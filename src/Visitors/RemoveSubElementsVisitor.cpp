@@ -46,9 +46,12 @@ namespace Clobscode
         list<vector<unsigned int> >::iterator iter;
         list<vector<unsigned int> >::iterator it;
         IntersectionsVisitor iv; // visitors
-
+        vector<unsigned int> &pointindex = o->pointindex;
         double max_dis = 1.2; //o->getMaxDistance();
         double max_dis_neg = -max_dis;
+        if (o->getIndex()==644){
+                    cout << pointindex.size() << " emm\n";
+                }
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
@@ -61,6 +64,8 @@ namespace Clobscode
                 
             }
             if (onein) {
+                o->setSurface();
+                return false;
                 still_in.push_back(sub_elements[i]);
             }
             else {
@@ -73,13 +78,14 @@ namespace Clobscode
                 if (cant == 0) {  //Notes: Verifica si el punto esta adentro
                     for (unsigned int j=0; j<e_pts.size(); j++) {
                         if (points->at(e_pts[j]).wasProjected()){
-                            cout << max_dis <<'\n';
-                            cout << avg[0] <<','<< avg[1] <<','<< avg[2]<< " centroide \n";
-                            cout << " ggg \n";
                             Point3D newP = newPointTowardsCentroide(points->at(e_pts[j]).getPoint(), max_dis, avg);
-                            cout << newP[0] <<','<< newP[1] <<','<< newP[2]<< " new\n";
+                            // cout << newP[0] <<','<< newP[1] <<','<< newP[2]<< " new\n";
                             if (mesh->pointIsInMesh(newP, faces_inter)){
                                 points->at(e_pts[j]).setInside();
+                                o->setSurface();
+                                if (o->getIndex()==552){
+                                    cout << pointindex.size() << " nodes\n";
+                                }
                                 return false;
                             }
                         }
@@ -96,14 +102,16 @@ namespace Clobscode
 
                 if (mesh->pointIsInMesh(avg, faces_inter)){
                     o->setSurface();
-                    // for (unsigned int j=0; j<e_pts.size(); j++) { 
-                    //     points->at(e_pts[j]).setProjected();
-                    // }
-                    // return false;
+                    for (unsigned int j=0; j<e_pts.size(); j++) { 
+                        if (points->at(e_pts[j]).wasProjected()){
+                            points->at(e_pts[j]).setInside();
+                        }
+                    }
+                    return false;
                 } 
-                else {
-                     to_review.push_back(sub_elements[i]);
-                }
+                // else {  
+                //      to_review.push_back(sub_elements[i]);
+                // }
             }
         }
 
@@ -144,7 +152,6 @@ namespace Clobscode
             //             return false; //Do not remove
             //         }
             //     }
-
             // }
             return true;
 

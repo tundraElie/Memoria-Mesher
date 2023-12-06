@@ -165,8 +165,8 @@ namespace Clobscode
 		linkElementsToNodes();
 		detectInsideNodes(input);
         
-        projectCloseToBoundaryNodes(input);
-   		removeOnSurface(input);
+        // projectCloseToBoundaryNodes(input);
+   		// removeOnSurface(input);
 		
 		//apply the surface Patterns
 		// applySurfacePatterns(input);
@@ -181,7 +181,7 @@ namespace Clobscode
 		// linkElementsToNodes();
         
 		// //shrink outside nodes to the input domain boundary
-		// shrinkToBoundary(input);
+		shrinkToBoundary(input);
         
         if (rotated) {
             for (unsigned int i=0; i<points.size(); i++) {
@@ -1364,6 +1364,9 @@ namespace Clobscode
             rsv.setFaces(inter_faces);
             //notes: octantes siempre adentro, ya no hace test.
             // cout << "oct"<< i << ": " << octants[i] << "\n";
+            if (octants[i].getIndex()==644){
+                    cout << " emmmm\n";
+                }
 			if (octants[i].isInside()) { 
                 //notes: guarda el octante
 				newele.push_back(octants[i]);
@@ -1627,7 +1630,7 @@ namespace Clobscode
         list<Octant>::iterator oiter;
         
         for (unsigned int i=0; i<octants.size(); i++) {
-            if (!octants[i].isSurface()) {
+            if (!octants[i].isSurface() || octants[i].isInside()) {
                 continue;
             }
             octants[i].computeMaxDistance(points);

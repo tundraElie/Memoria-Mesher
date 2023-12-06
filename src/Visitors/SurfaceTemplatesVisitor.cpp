@@ -59,7 +59,7 @@ namespace Clobscode
 
         for (unsigned int i=0; i<pointindex.size(); i++) {
 
-            if (meshpts->at(pointindex[i]).isOutside()) {
+            if (meshpts->at(pointindex[i]).isOutside() && !(meshpts->at(pointindex[i]).wasProjected())) {
                 tmpout.push_back(i);
             }
             else {
@@ -67,7 +67,7 @@ namespace Clobscode
             }
         }
 
-        //save the points in a std::vector for quick acces
+        //save the points in a std::vector for quick access
         inpts.reserve(tmpin.size());
         for(piter=tmpin.begin();piter!=tmpin.end();piter++)
             inpts.push_back(*piter);
@@ -77,9 +77,14 @@ namespace Clobscode
 
 
         if (pointindex.size()==8 && sub_elements.size()==1) {
-
             //if we are here, the "inside" projected nodes will count as
             //outside nodes.
+            //A change has been made, and now the "inside" projected nodes
+            //will count as inside
+            if (inpts.size() == 1) { //en 1 hay varios y hay uno en 2
+                // cout << outpts.size() <<"\n";
+                return true;
+            }
             return applyHexSurfaceTemplates(o, inpts, outpts);
         }
         //if we are here, the octant contains mixed elements (either from a previous
@@ -105,7 +110,7 @@ namespace Clobscode
                 vector<bool> nds_inside (5,true);
                 for (unsigned int j=0; j<5; j++) {
 
-                    if (meshpts->at(sub_elements[i][j]).isOutside()) {
+                    if (meshpts->at(sub_elements[i][j]).isOutside() && !(meshpts->at(sub_elements[i][j]).wasProjected())) {
                         nds_inside[j] = false;
                     }
                 }
@@ -129,7 +134,7 @@ namespace Clobscode
                 //check inside state for each of its nodes
                 vector<bool> nds_inside (6,true);
                 for (unsigned int j=0; j<6; j++) {
-                    if (meshpts->at(sub_elements[i][j]).isOutside()) {
+                    if (meshpts->at(sub_elements[i][j]).isOutside() && !(meshpts->at(sub_elements[i][j]).wasProjected())) {
                         nds_inside[j] = false;
                     }
                 }

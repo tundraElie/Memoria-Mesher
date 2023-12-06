@@ -1,7 +1,7 @@
 import subprocess
 
 DIR = "/home/taiga/Desktop/U/mesher/"
-NUM = "4"
+NUM = "0"
 NAME = "guide"
 VIEWER = True
 
@@ -51,10 +51,10 @@ if cmake_process.returncode == 0:
             else:
                 print(f"Error running mesher_roi: {mesher_roi_process.returncode}")
         else:
+            print(make_error)
             print("Error during make. Make output:")
             print(make_output)
             print("Make error:")
-            print(make_error)
     else:
         print(f"Error during make: {make_process.returncode}")
 else:
