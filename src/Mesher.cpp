@@ -1655,14 +1655,14 @@ namespace Clobscode
                         points[epts[j]].setInside();
                     }
                 }
-                // if (points[epts[j]].isInside()) {
+                if (points[epts[j]].isInside()) {
                     in_nodes.push_back(epts[j]);
                     double md = octants[i].getMaxDistance();
                     if (j>7) {
                         md*=0.5;
                     }
                     points[epts[j]].setMaxDistance(md);
-                // }
+                }
             }
             
         }
@@ -1700,7 +1700,7 @@ namespace Clobscode
             double dis = (current - projected).Norm();
             // cout << dis <<" "<< points[*piter].getMaxDistance() << "\n";
             // cout << p_eles.size() << "\n";
-            // if(dis<points[*piter].getMaxDistance()*1.5){
+            if(dis<points[*piter].getMaxDistance()){
                 //this node have been moved to boundary, thus every element
                 //sharing this node must be set as a border element in order
                 //to avoid topological problems.
@@ -1721,7 +1721,7 @@ namespace Clobscode
                     //     points.at(*piter).setOutside();
                     // }
                 }
-            // }
+            }
         }
 
         nodes_projected.sort();

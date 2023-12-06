@@ -47,31 +47,44 @@ namespace Clobscode
         list<vector<unsigned int> >::iterator it;
         IntersectionsVisitor iv; // visitors
 
-        double max_dis = o->getMaxDistance()*0.9;
+        double max_dis = 1.2; //o->getMaxDistance();
         double max_dis_neg = -max_dis;
         for (unsigned int i=0; i<sub_elements.size(); i++) {
             bool onein = false;
             vector<unsigned int> e_pts = sub_elements[i];
+            unsigned int cant = 0;
             for (unsigned int j=0; j<e_pts.size(); j++) {
-                if (points->at(e_pts[j]).isInside() && !points->at(e_pts[j]).wasProjected() ) {  //Notes: Verifica si el punto esta adentro
+                if (points->at(e_pts[j]).isInside() && !points->at(e_pts[j]).wasProjected()) {  //Notes: Verifica si el punto esta adentro
                     onein = true;
-                    break;
+                    cant++;
                 }
+                
             }
-            // cout <<  " Q\n";
             if (onein) {
-                o->setSurface();
                 still_in.push_back(sub_elements[i]);
             }
             else {
                 // to_review.push_back(sub_elements[i]);
-
                 Point3D avg;
                 for (unsigned int i =0; i<e_pts.size(); i++){
                     avg += points->at(o->getPoints()[i]).getPoint(); // El peso promedio del punto está dentro
                 }
                 avg /= e_pts.size();
-               
+                if (cant == 0) {  //Notes: Verifica si el punto esta adentro
+                    for (unsigned int j=0; j<e_pts.size(); j++) {
+                        if (points->at(e_pts[j]).wasProjected()){
+                            cout << max_dis <<'\n';
+                            cout << avg[0] <<','<< avg[1] <<','<< avg[2]<< " centroide \n";
+                            cout << " ggg \n";
+                            Point3D newP = newPointTowardsCentroide(points->at(e_pts[j]).getPoint(), max_dis, avg);
+                            cout << newP[0] <<','<< newP[1] <<','<< newP[2]<< " new\n";
+                            if (mesh->pointIsInMesh(newP, faces_inter)){
+                                points->at(e_pts[j]).setInside();
+                                return false;
+                            }
+                        }
+                    }
+                }
                 // if (max_dis - (points->at(o->getPoints()[0]).getPoint() - avg).Norm() < -0.1) {
                 //     cout << (points->at(o->getPoints()[0]).getPoint() - avg).Norm()<< " "<< max_dis << " "<< max_dis-(points->at(o->getPoints()[0]).getPoint() - avg).Norm()<<"\n";
                 //     o->setSurface();
